@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makasi bang acher</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            transition: transform 1s ease-in-out;
+        }
+
+        .slide-up {
+            transform: translateY(-60px);
+        }
+
+        .shake-effect {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        #typing-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            border-right: 3px solid #ff4d6d;
+            padding-right: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            display: inline-block;
+            text-shadow: 0 0 10px rgba(255, 77, 109, 0.5);
+            transition: color 0.5s;
+        }
+
+        .rainbow-text {
+            animation: rainbow 1s linear infinite;
+            border-right: none !important;
+        }
+
+        @keyframes rainbow { 
+            0% { color: #ff0000; text-shadow: 0 0 10px #ff0000; } 
+            20% { color: #ffff00; text-shadow: 0 0 10px #ffff00; } 
+            40% { color: #00ff00; text-shadow: 0 0 10px #00ff00; } 
+            60% { color: #00ffff; text-shadow: 0 0 10px #00ffff; } 
+            80% { color: #0000ff; text-shadow: 0 0 10px #0000ff; } 
+            100% { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; } 
+        }
+
+        .cursor-blink {
+            animation: blink 0.75s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        #gif-container {
+            margin-top: 20px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 0;
+            overflow: hidden;
+        }
+
+        #gif-container img {
+            max-width: 300px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.4);
+        }
+
+        .show-content {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+        .heart-particle {
+            position: absolute;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: floatUp 2s ease-out forwards;
+            opacity: 0;
+            z-index: 5;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot));
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <div id="typing-text" class="cursor-blink"></div>
+        
+        <div id="gif-container">
+            <img id="myGif" src="https://ik.imagekit.io/notargazyu/cry-animecry.gif" alt="Nangis bombay">
+        </div>
+    </div>
+
+    <script>
+        const textToType = "Makasi Acher Chan~";
+        const typeSpeed = 100;
+        const textElement = document.getElementById('typing-text');
+        const container = document.getElementById('container');
+        const gifContainer = document.getElementById('gif-container');
+        const bodyElement = document.body;
+        let i = 0;
+
+        function typeWriter() {
+            if (i < textToType.length) {
+                textElement.innerHTML += textToType.charAt(i);
+                i++;
+                setTimeout(typeWriter, typeSpeed);
+            } else {
+                setTimeout(() => {
+                    textElement.classList.add('rainbow-text');
+                    container.classList.add('slide-up');
+                    
+                    setTimeout(() => {
+                        gifContainer.classList.add('show-content');
+                        bodyElement.classList.add('shake-effect');
+                        
+                        setInterval(createHeartStream, 150);
+                        
+                        setTimeout(() => {
+                            bodyElement.classList.remove('shake-effect');
+                        }, 500);
+
+                    }, 400);
+                }, 300);
+            }
+        }
+
+        function createHeartStream() {
+            const emojis = ['❤️', '😭', '💕', '🤧', '✨', '🌹'];
+            const particleCount = 2;
+
+            for (let j = 0; j < particleCount; j++) {
+                const particle = document.createElement('div');
+                particle.classList.add('heart-particle');
+                particle.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+
+                const rect = textElement.getBoundingClientRect();
+                const startX = rect.left + rect.width / 2;
+                const startY = rect.top + rect.height / 2;
+                
+                particle.style.left = startX + 'px';
+                particle.style.top = startY + 'px';
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 100 + Math.random() * 300;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                const rot = (Math.random() - 0.5) * 720;
+
+                particle.style.setProperty('--tx', `${tx}px`);
+                particle.style.setProperty('--ty', `${ty}px`);
+                particle.style.setProperty('--rot', `${rot}deg`);
+
+                document.body.appendChild(particle);
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 2000);
+            }
+        }
+
+        window.onload = typeWriter;
+    </script>
+</body>
+</html>
